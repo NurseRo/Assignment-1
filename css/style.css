@@ -4,6 +4,12 @@ html, body {
     padding: 0; 
 }
 
+#controls {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 #video-container {
     /* view height, minus header bar height */
     height: calc(100vh - 56px);
