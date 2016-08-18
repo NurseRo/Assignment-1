@@ -33,9 +33,19 @@ function motionhandler(){
 // ground, in metres.
 function setCameraHeightValue()
 {
-    // Step 3: Set camera height
-    // check if input is a number and is positive
-    // display on screen using the displayMessage method
+   
+	// Step 3: Set camera height
+	heightval=window.prompt("Please enter the height of the camera from the ground (meters):")
+	// check if input is a number and is positive
+	if (heightval.isnumber=true & heightval>=0)
+	{
+        // display on screen using the displayMessage method
+		cameraVideoPage.displayMessage("Height of camera: " + heightval + "m",3000)
+		cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + heightval + "m")
+	}
+	
+	else {cameraVideoPage.displayMessage("Input is invalid, please try again",3000)}
+	
 }
     
 // This function is called by a button to set the angle to the base of
@@ -55,3 +65,17 @@ function setApexTiltAngle()
 }
 
 // You may need to write several other functions.
+function HeightCalc()
+{
+    var meters, angleToTop, angleInRadians, calcHeight, totalHeight
+	metres = cameraVideoPage.setHeadsUpDisplayHTML
+	
+    cameraVideoPage.displayMessage(meters + "I love Rohit",3000)
+	
+    angleToTop=apexAngle-90
+	angleInRadians=(angleToTop*Math.PI)/180
+	calcHeight=baseLength*Math.tan(angleInRadians)	
+	totalHeight=calcHeight+userHeight
+	
+    cameraVideoPage.setHeadsUpDisplayHTML("Height of building: " + totalHeight + "m")
+}
