@@ -15,69 +15,72 @@
 // Initialise the camera video page and callback to our 
 // cameraVideoPageInitialised() function when ready.
 var cameraVideoPage = new CameraVideoPageController(
-        cameraVideoPageInitialised);
-var heightVal;
+    cameraVideoPageInitialised);
+var userHeight, apexAngle = 160,
+    baseAngle = 40,
+    baseLength = 40;
+
+// function to error check refreshed values
+function IsRefreshed() {
+    if (userHeight.isNumber = true) {
+        if (apexAngle.isNumber = true) {
+            if (baseAngle.isNumber = true) {
+                HeightCalc();
+            }
+        }
+
+    }
+}
 // You may need to create variables to store state.
-    
+
 // This function will be called when the camera video page
 // is intialised and ready to be used.
-function cameraVideoPageInitialised()
-{
+function cameraVideoPageInitialised() {
     // Step 1: Check for and intialise deviceMotion
     //Initiates device motion
 }
-function motionhandler(){
-}
+
+function motionhandler() {}
 // This function is called by a button to set the height of phone from the
 // ground, in metres.
-function setCameraHeightValue()
-{
-   
-	// Step 3: Set camera height
-	heightVal = window.prompt("Please enter the height of the camera from the ground (meters):");
-	// check if input is a number and is positive
-	if (heightVal.isnumber = true && heightVal > 0)
-	{
+function setCameraHeightValue() {
+
+    // Step 3: Set camera height
+    userHeight = window.prompt("Please enter the height of the camera from the ground (meters):");
+    // check if input is a number and is positive
+    if (isNaN(userHeight) && userHeight > 0) {
         // display on screen using the displayMessage method
-		cameraVideoPage.displayMessage("Height of camera: " + heightVal + "m",3000)
-		cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + heightVal + "m")
-	}
-	
-	else 
-    {
-        cameraVideoPage.displayMessage("Input is invalid, please try again.",3000)
+        cameraVideoPage.displayMessage("Height of camera: " + userHeight + "m", 2000)
+        cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + userHeight + "m")
+    } else {
+        cameraVideoPage.displayMessage("Input is invalid, please try again.", 2000)
     }
-	
+    IsRefreshed();
 }
-    
+
 // This function is called by a button to set the angle to the base of
 // the object being measured.  It uses the current smoothed tilt angle.
-function setBaseTiltAngle()
-{
+function setBaseTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
 }
 
 // This function is called by a button to set the angle to the apex of
 // the object being measured.  It uses the current smoothed tilt angle.
-function setApexTiltAngle()
-{
+function setApexTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
 }
 
 // You may need to write several other functions.
-function HeightCalc()
-{
-    var meters, angleToTop, angleInRadians, calcHeight, totalHeight
-	metres = cameraVideoPage.setHeadsUpDisplayHTML
-	
-    cameraVideoPage.displayMessage(meters + "I love Rohit",3000)
-	
-    angleToTop=apexAngle-90
-	angleInRadians=(angleToTop*Math.PI)/180
-	calcHeight=baseLength*Math.tan(angleInRadians)	
-	totalHeight=calcHeight+userHeight
-	
+function HeightCalc() {
+    var angleToTop, angleInRadians, calcHeight, totalHeight;
+    // Complex calculations
+    angleToTop = apexAngle - 90;
+    // Coverting Degrees to Radians
+    angleInRadians = (angleToTop * Math.PI) / 180;
+    calcHeight = baseLength * Math.tan(angleInRadians);
+    totalHeight = calcHeight + userHeight;
+
     cameraVideoPage.setHeadsUpDisplayHTML("Height of building: " + totalHeight + "m")
 }
