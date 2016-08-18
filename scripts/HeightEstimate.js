@@ -24,8 +24,11 @@ var cameraVideoPage = new CameraVideoPageController(
 function cameraVideoPageInitialised()
 {
     // Step 1: Check for and intialise deviceMotion
+    //Initiates device motion
+    window.addEventListener("devicemotion", motionhandler, true);
 }
-    
+function motionhandler(){
+}
 // This function is called by a button to set the height of phone from the
 // ground, in metres.
 function setCameraHeightValue()
