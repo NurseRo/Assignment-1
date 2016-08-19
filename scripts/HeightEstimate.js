@@ -16,16 +16,17 @@
 // cameraVideoPageInitialised() function when ready.
 var cameraVideoPage = new CameraVideoPageController(
     cameraVideoPageInitialised);
-var userHeight, apexAngle = 160,
-    baseAngle = 40,
+var userHeight, displayHeight,
+	apexAngle = 160,
+    baseAngle = 60,
     baseLength = 40;
 
-// function to error check refreshed values
-function IsRefreshed() {
-    if (userHeight.isNumber = true) {
-        if (apexAngle.isNumber = true) {
-            if (baseAngle.isNumber = true) {
-                HeightCalc();
+// function to error check refreshed values (refreshes the calculated height)
+function isRefreshed() {
+    if (isNaN(userHeight) == false) {
+        if (isNaN(apexAngle) == false) {
+            if (isNaN(baseAngle) == false) {
+                heightCalc();
             }
         }
 
@@ -45,17 +46,23 @@ function motionhandler() {}
 // ground, in metres.
 function setCameraHeightValue() {
 
+	var inputHeight
     // Step 3: Set camera height
-    userHeight = window.prompt("Please enter the height of the camera from the ground (meters):");
+    inputHeight = window.prompt("Please enter the height of the camera from the ground (meters):");
+	inputHeight = Number(inputHeight);
     // check if input is a number and is positive
-    if (isNaN(userHeight) && userHeight > 0) {
+    if (isNaN(inputHeight)==false && inputHeight > 0) {
         // display on screen using the displayMessage method
-        cameraVideoPage.displayMessage("Height of camera: " + userHeight + "m", 2000)
-        cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + userHeight + "m")
+		userHeight=inputHeight //avoids accidentally calculations using NaN
+        cameraVideoPage.displayMessage("Height of camera: " + userHeight + "m", 2000);
+        
+		isRefreshed();
+		headsUpDisplay();
+				
     } else {
-        cameraVideoPage.displayMessage("Input is invalid, please try again.", 2000)
+        cameraVideoPage.displayMessage("Input is invalid, please try again.", 2000);
     }
-    IsRefreshed();
+    
 }
 
 // This function is called by a button to set the angle to the base of
@@ -63,6 +70,9 @@ function setCameraHeightValue() {
 function setBaseTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
+    
+    isRefreshed();
+    headsUpDisplay();
 }
 
 // This function is called by a button to set the angle to the apex of
@@ -70,10 +80,14 @@ function setBaseTiltAngle() {
 function setApexTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
+    
+    isRefreshed();
+    headsUpDisplay();
 }
 
 // You may need to write several other functions.
-function HeightCalc() {
+function heightCalc() {
+	
     var angleToTop, angleInRadians, calcHeight, totalHeight;
     // Complex calculations
     angleToTop = apexAngle - 90;
@@ -81,6 +95,42 @@ function HeightCalc() {
     angleInRadians = (angleToTop * Math.PI) / 180;
     calcHeight = baseLength * Math.tan(angleInRadians);
     totalHeight = calcHeight + userHeight;
+	displayHeight= totalHeight.toFixed(2); //only want to display to 2 decimal places
+	
+}
 
-    cameraVideoPage.setHeadsUpDisplayHTML("Height of building: " + totalHeight + "m")
+function headsUpDisplay() { //refreshes HUD depending on what values have been inputted
+	
+	if (isNaN(userHeight)==false)
+	{
+		if (isNaN(baseAngle)==false)
+		{
+			if (isNaN(apexAngle)==false)
+			{
+				cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + userHeight + "m<br/>Angle from ground to Base: " + baseAngle + 													" degrees<br/>Angle from ground to Apex: " + apexAngle + " degrees<br/>" + "Height of building: " + displayHeight + "m" );
+			}
+			
+			else {cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + userHeight + "m<br/>Angle from ground to Base: " + baseAngle + " degrees");}
+		}
+		
+		else if (isNaN(apexAngle)==false)
+		{
+			cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + userHeight + "m<br/>Angle from ground to Apex: " + apexAngle + " degrees");
+		}
+		else {cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + userHeight + "m");}
+	}
+	
+	else if (isNaN(baseAngle)==false)
+	{
+		if (isNaN(apexAngle)==false)
+		{
+			cameraVideoPage.setHeadsUpDisplayHTML("Angle from ground to Base: " + baseAngle + " degrees<br/>Angle from ground to Apex: " + apexAngle + 										"degrees<br/>");
+		}
+		
+		else {cameraVideoPage.setHeadsUpDisplayHTML("Angle from ground to Base: " + baseAngle + " degrees");}
+	}
+	else if (isNaN(apexAngle)==false)
+	{
+		cameraVideoPage.setHeadsUpDisplayHTML("Angle from ground to Apex: " + apexAngle + " degrees");
+	}
 }
