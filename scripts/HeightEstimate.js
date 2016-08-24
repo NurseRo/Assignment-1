@@ -16,10 +16,10 @@
 // cameraVideoPageInitialised() function when ready.
 var cameraVideoPage = new CameraVideoPageController(
     cameraVideoPageInitialised);
-var userHeight, displayHeight;
-    apexAngle = 160,
-    baseAngle = 60,
-    baseLength = 40;
+var userHeight, displayHeight, apexAngle, baseAngle, baseLength;
+apexAngle = 160;
+baseAngle = 60;
+baseLength = 40;
 
 // function to error check refreshed values (refreshes the calculated height)
 function isRefreshed() {
@@ -34,7 +34,16 @@ function isRefreshed() {
 // is intialised and ready to be used.
 function cameraVideoPageInitialised() {
     // Step 1: Check for and intialise deviceMotion
-    //Initiates device motion
+    if (window.DeviceMotionEvent) {
+        window.addEventListener('deviceorientation', deviceMotion);
+    }
+}
+
+function deviceMotion(event) {
+    var alpha = event.alpha;
+    var beta = event.beta;
+    var gamma = event.gamma;
+    //Smooth out values
 }
 
 // This function is called by a button to set the height of phone from the
@@ -63,8 +72,8 @@ function setCameraHeightValue() {
 function setBaseTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
-
-    isRefreshed();
+    apexAngle =
+        isRefreshed();
     headsUpDisplay();
 }
 
