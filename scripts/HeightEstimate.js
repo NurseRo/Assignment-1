@@ -16,7 +16,7 @@
 // cameraVideoPageInitialised() function when ready.
 var cameraVideoPage = new CameraVideoPageController(
     cameraVideoPageInitialised);
-var userHeight, displayHeight, apexAngle, baseAngle, baseLength, tempApexAngle, tempBaseAngle, bCounter, medianArray;
+var userHeight, displayHeight, apexAngle, baseAngle, baseLength, betaAngle, bCounter, medianArray;
 bCounter = 0;
 medianArray = [0,0,0,0,0,0,0,0,0,0,0];
 apexAngle = 160;
@@ -48,7 +48,7 @@ function deviceMotion(event) {
         bCounter += 1;
     } else {
         medianArray.sort();
-        medianArray[5];
+        medianArray[5].toFixed(0);
         bCounter = 0;
     }
     smoothValues(beta, bCounter);
@@ -80,7 +80,7 @@ function setCameraHeightValue() {
 function setBaseTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
-    baseAngle = tempBaseAngle;
+    baseAngle = betaAngle;
     isRefreshed();
     headsUpDisplay();
 
@@ -93,7 +93,7 @@ function setBaseTiltAngle() {
 function setApexTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
-    apexAngle = tempApexAngle;
+    apexAngle = betaAngle;
     isRefreshed();
     headsUpDisplay();
 
