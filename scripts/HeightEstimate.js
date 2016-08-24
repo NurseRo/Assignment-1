@@ -16,8 +16,10 @@
 // cameraVideoPageInitialised() function when ready.
 var cameraVideoPage = new CameraVideoPageController(
     cameraVideoPageInitialised);
-var userHeight, displayHeight, apexAngle, baseAngle, baseLength, tempApexAngle, tempBaseAngle;
-apexAngle = 160;p
+var userHeight, displayHeight, apexAngle, baseAngle, baseLength, tempApexAngle, tempBaseAngle, bCounter, medianArray;
+bCounter = 0;
+medianArray = [0,0,0,0,0,0,0,0,0,0,0];
+apexAngle = 160;
 baseAngle = 60;
 baseLength = 40;
 
@@ -40,24 +42,30 @@ function cameraVideoPageInitialised() {
 }
 
 function deviceMotion(event) {
-    var alpha = event.alpha;
     var beta = event.beta;
-    var gamma = event.gamma;
     //Smooth out values
+    if (bCounter < 11) {
+        bCounter += 1;
+    } else {
+        medianArray.sort();
+        medianArray[5];
+        bCounter = 0;
+    }
+    smoothValues(beta, bCounter);
 }
 
+function smoothValues(beta, bCounter) {
+    medianArray[bCounter] = beta;
+}
 // This function is called by a button to set the height of phone from the
 // ground, in metres.
 function setCameraHeightValue() {
-
     var inputHeight
         // Step 3: Set camera height
-    inputHeight = window.prompt("Please enter the height of the camera from the ground (meters):");
-    inputHeight = Number(inputHeight);
+    userHeight = Number(window.prompt("Please enter the height of the camera from the ground (meters):"));
     // check if input is a number and is positive
-    if (isNaN(inputHeight) == false && inputHeight > 0) {
+    if (isNaN(userHeight) == false && userHeight > 0) {
         // display on screen using the displayMessage method
-        userHeight = inputHeight //avoids accidentally calculations using NaN
         isRefreshed();
         headsUpDisplay();
 
@@ -72,11 +80,10 @@ function setCameraHeightValue() {
 function setBaseTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
-    apexAngle =
-        isRefreshed();
-    baseAngle=tempBaseAngleaseAngle;
+    baseAngle = tempBaseAngle;
+    isRefreshed();
     headsUpDisplay();
-   
+
 }
 
 
@@ -86,11 +93,10 @@ function setBaseTiltAngle() {
 function setApexTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
-
+    apexAngle = tempApexAngle;
     isRefreshed();
-    apexAngle=tempApexAngle;
     headsUpDisplay();
-    
+
 }
 
 
