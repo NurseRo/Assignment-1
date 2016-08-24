@@ -17,15 +17,13 @@
 var cameraVideoPage = new CameraVideoPageController(
     cameraVideoPageInitialised);
 var userHeight, displayHeight, apexAngle, baseAngle, baseLength, betaAngle, bCounter, medianArray;
-bCounter = 0;
-medianArray = [0,0,0,0,0,0,0,0,0,0,0];
-apexAngle = 160;
-baseAngle = 60;
+bCounter = -1;
+medianArray = [0,0,0,0,0,0,0,0,0];
 baseLength = 40;
 
 // function to error check refreshed values (refreshes the calculated height)
 function isRefreshed() {
-    if (isNaN(userHeight) == false || isNaN(apexAngle) == false || isNaN(baseAngle) == false) {
+    if (isNaN(userHeight) == false && isNaN(apexAngle) == false && isNaN(baseAngle) == false) {
         heightCalc();
 
     }
@@ -44,14 +42,17 @@ function cameraVideoPageInitialised() {
 function deviceMotion(event) {
     var beta = event.beta;
     //Smooth out values
-    if (bCounter < 11) {
+    if (bCounter < 8) {
         bCounter += 1;
     } else {
         medianArray.sort();
-        medianArray[5].toFixed(0);
-        bCounter = 0;
+        betaAngle = medianArray[4].toFixed(0);
+    isRefreshed();
+    headsUpDisplay();
+        bCounter = -1;
     }
     smoothValues(beta, bCounter);
+    betaAngle=beta
 }
 
 function smoothValues(beta, bCounter) {
@@ -62,10 +63,12 @@ function smoothValues(beta, bCounter) {
 function setCameraHeightValue() {
     var inputHeight
         // Step 3: Set camera height
-    userHeight = Number(window.prompt("Please enter the height of the camera from the ground (meters):"));
+    inputHeight = Number(window.prompt("Please enter the height of the camera from the ground (meters):"));
+    
     // check if input is a number and is positive
-    if (isNaN(userHeight) == false && userHeight > 0) {
+    if (isNaN(inputHeight) == false && inputHeight > 0) {
         // display on screen using the displayMessage method
+        userHeight = inputHeight
         isRefreshed();
         headsUpDisplay();
 
@@ -78,12 +81,18 @@ function setCameraHeightValue() {
 // This function is called by a button to set the angle to the base of
 // the object being measured.  It uses the current smoothed tilt angle.
 function setBaseTiltAngle() {
+    var tempBase
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
-    baseAngle = betaAngle;
+    tempBase = betaAngle.toFixed(0);
+	
+    if (tempBase >= 0 && tempBase <= 90){ //test to make sure input is valid
+		baseAngle = tempBase
+        //displayMessage of base angle --- AMITHA
+    }
+    else {} //displayMessage of invalid input --- AMITHA
     isRefreshed();
     headsUpDisplay();
-
 }
 
 
@@ -91,13 +100,17 @@ function setBaseTiltAngle() {
 // This function is called by a button to set the angle to the apex of
 // the object being measured.  It uses the current smoothed tilt angle.
 function setApexTiltAngle() {
+     var tempApex
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
-    apexAngle = betaAngle;
+    tempApex = betaAngle.toFixed(0);
+    if (tempApex >= 0 && tempApex <= 180){ //test to make sure input is valid
+         apexAngle = tempApex
+        //displayMessage of apex angle --- AMITHA
+    }
+    else {} //displayMessage of invalid input --- AMITHA
     isRefreshed();
     headsUpDisplay();
-
-}
 
 
 // You may need to write several other functions.
@@ -119,22 +132,22 @@ function headsUpDisplay() { //refreshes HUD depending on what values have been i
     if (isNaN(userHeight) == false) {
         if (isNaN(baseAngle) == false) {
             if (isNaN(apexAngle) == false) {
-                cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + userHeight + "m<br/>Angle from ground to Base: " + baseAngle + " degrees<br/>Angle from ground to Apex: " + apexAngle + " degrees<br/>" + "Height of building: " + displayHeight + "m");
+                cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Height of camera: " + userHeight + "m<br/>Angle from ground to Base: " + baseAngle + " degrees<br/>Angle from ground to Apex: " + apexAngle + " degrees<br/>Height of building: " + displayHeight + "m");
             } else {
-                cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + userHeight + "m<br/>Angle from ground to Base: " + baseAngle + " degrees");
+                cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Height of camera: " + userHeight + "m<br/>Angle from ground to Base: " + baseAngle + " degrees");
             }
         } else if (isNaN(apexAngle) == false) {
-            cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + userHeight + "m<br/>Angle from ground to Apex: " + apexAngle + " degrees");
+            cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Height of camera: " + userHeight + "m<br/>Angle from ground to Apex: " + apexAngle + " degrees");
         } else {
-            cameraVideoPage.setHeadsUpDisplayHTML("Height of camera: " + userHeight + "m");
+            cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Height of camera: " + userHeight + "m");
         }
     } else if (isNaN(baseAngle) == false) {
         if (isNaN(apexAngle) == false) {
-            cameraVideoPage.setHeadsUpDisplayHTML("Angle from ground to Base: " + baseAngle + " degrees<br/>Angle from ground to Apex: " + apexAngle + "degrees<br/>");
+            cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Angle from ground to Base: " + baseAngle + " degrees<br/>Angle from ground to Apex: " + apexAngle + " degrees<br/>");
         } else {
-            cameraVideoPage.setHeadsUpDisplayHTML("Angle from ground to Base: " + baseAngle + " degrees");
+            cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Angle from ground to Base: " + baseAngle + " degrees");
         }
     } else if (isNaN(apexAngle) == false) {
-        cameraVideoPage.setHeadsUpDisplayHTML("Angle from ground to Apex: " + apexAngle + " degrees");
+        cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Angle from ground to Apex: " + apexAngle + " degrees");
     }
 }
