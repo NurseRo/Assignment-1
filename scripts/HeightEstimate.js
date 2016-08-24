@@ -16,8 +16,8 @@
 // cameraVideoPageInitialised() function when ready.
 var cameraVideoPage = new CameraVideoPageController(
     cameraVideoPageInitialised);
-var userHeight, displayHeight, apexAngle, baseAngle, baseLength;
-apexAngle = 160;
+var userHeight, displayHeight, apexAngle, baseAngle, baseLength, tempApexAngle, tempBaseAngle;
+apexAngle = 160;p
 baseAngle = 60;
 baseLength = 40;
 
@@ -74,8 +74,12 @@ function setBaseTiltAngle() {
     // display on screen using the displayMessage method
     apexAngle =
         isRefreshed();
+    baseAngle=tempBaseAngleaseAngle;
     headsUpDisplay();
+   
 }
+
+
 
 // This function is called by a button to set the angle to the apex of
 // the object being measured.  It uses the current smoothed tilt angle.
@@ -84,8 +88,11 @@ function setApexTiltAngle() {
     // display on screen using the displayMessage method
 
     isRefreshed();
+    apexAngle=tempApexAngle;
     headsUpDisplay();
+    
 }
+
 
 // You may need to write several other functions.
 function heightCalc() {
