@@ -21,6 +21,7 @@ var cameraVideoPage = new CameraVideoPageController(
 var userHeight, displayHeight, apexAngle, baseAngle, baseLength, betaAngle, bCounter, medianArray;
 bCounter = 0;
 medianArray = Array.apply(null, Array(9)).map(Number.prototype.valueOf, 0);
+baseLength = 40;
 
 // This function will be called when the camera video page
 // is intialised and ready to be used.
@@ -60,7 +61,7 @@ function setCameraHeightValue() {
     // check if input is a number and is positive
     if (isNaN(inputHeight) == false && inputHeight > 0) {
         // display on screen using the displayMessage method
-        userHeight = inputHeight
+        userHeight = inputHeight;
         headsUpDisplay();
     } else {
         cameraVideoPage.displayMessage("Input is invalid, please try again.", 2000);
@@ -71,15 +72,9 @@ function setCameraHeightValue() {
 // This function is called by a button to set the angle to the base of
 // the object being measured.  It uses the current smoothed tilt angle.
 function setBaseTiltAngle() {
-    var tempBase
-        // Step 4: Record tilt angle 
-        // display on screen using the displayMessage method
-    tempBase = betaAngle.toFixed(0);
-
-    if (tempBase >= 0 && tempBase <= 90) { //test to make sure input is valid
-        baseAngle = tempBase
-            //displayMessage of base angle --- AMITHA
-    } else {} //displayMessage of invalid input --- AMITHA
+    // Step 4: Record tilt angle 
+    // display on screen using the displayMessage method
+    baseAngle = betaAngle;
     headsUpDisplay();
 }
 
@@ -88,14 +83,9 @@ function setBaseTiltAngle() {
 // This function is called by a button to set the angle to the apex of
 // the object being measured.  It uses the current smoothed tilt angle.
 function setApexTiltAngle() {
-    var tempApex
-        // Step 4: Record tilt angle 
-        // display on screen using the displayMessage method
-    tempApex = betaAngle.toFixed(0);
-    if (tempApex >= 0 && tempApex <= 180) { //test to make sure input is valid
-        apexAngle = tempApex
-            //displayMessage of apex angle --- AMITHA
-    } else {} //displayMessage of invalid input --- AMITHA
+    // Step 4: Record tilt angle 
+    // display on screen using the displayMessage method
+    apexAngle = betaAngle;
     headsUpDisplay();
 }
 
@@ -114,18 +104,19 @@ function heightCalc() { // Function to calculate building height
 function headsUpDisplay() { //refreshes HUD depending on what values have been inputted
     var stringDisplay = {
         angle: "Angle: " + betaAngle + "&deg;<br>",
-        userH: "Height of camera: " + userHeight + "m<br/>",
-        base: "Angle from ground to Base: " + baseAngle + "&deg;<br>",
-        apex: "Angle from ground to Apex: " + apexAngle + "&deg;<br>",
-        dispH: "Height of building: " + displayHeight + "m",
+        userH: "Camera Height: " + userHeight + "m<br/>",
+        base: "Base Angle: " + baseAngle + "&deg;<br>",
+        apex: "Apex Angle: " + apexAngle + "&deg;<br>",
+        dispH: "Object Height: " + displayHeight + "m",
     }
     if (isNaN(userHeight) == false) {
         if (isNaN(baseAngle) == false) {
             //There is all values
             if (isNaN(apexAngle) == false) {
-                cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.userH + stringDisplay.base + stringDisplay.apex + stringDisplay.dispH);
                 // Calculate building height
                 heightCalc();
+                //Display String
+                cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.userH + stringDisplay.base + stringDisplay.apex + stringDisplay.dispH);
             }
             // There is base angle and user height
             else {
@@ -153,5 +144,9 @@ function headsUpDisplay() { //refreshes HUD depending on what values have been i
     // There is only apex angle
     else if (isNaN(apexAngle) == false) {
         cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.apex);
+    }
+    // There is no values
+    else {
+        cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle);
     }
 }
