@@ -16,19 +16,11 @@
 // cameraVideoPageInitialised() function when ready.
 var cameraVideoPage = new CameraVideoPageController(
     cameraVideoPageInitialised);
+
+// Global variables to be used
 var userHeight, displayHeight, apexAngle, baseAngle, baseLength, betaAngle, bCounter, medianArray;
-bCounter = -1;
-medianArray = [0,0,0,0,0,0,0,0,0];
-baseLength = 40;
-
-// function to error check refreshed values (refreshes the calculated height)
-function isRefreshed() {
-    if (isNaN(userHeight) == false && isNaN(apexAngle) == false && isNaN(baseAngle) == false) {
-        heightCalc();
-
-    }
-}
-// You may need to create variables to store state.
+bCounter = 0;
+medianArray = Array.apply(null, Array(9)).map(Number.prototype.valueOf, 0);
 
 // This function will be called when the camera video page
 // is intialised and ready to be used.
@@ -39,39 +31,37 @@ function cameraVideoPageInitialised() {
     }
 }
 
+// Function to handle device beta angles
 function deviceMotion(event) {
     var beta = event.beta;
-    //Smooth out values
-    if (bCounter < 8) {
+    if (bCounter < medianArray.length) {
+        //Index changer for global array (to fill the array)
         bCounter += 1;
     } else {
+        // Find median of full array
         medianArray.sort();
         betaAngle = medianArray[4].toFixed(0);
-    isRefreshed();
-    headsUpDisplay();
-        bCounter = -1;
+        headsUpDisplay();
+        bCounter = 0;
     }
+    // Captures a single beta to add to the global array
     smoothValues(beta, bCounter);
-    betaAngle=beta
 }
 
-function smoothValues(beta, bCounter) {
-    medianArray[bCounter] = beta;
+function smoothValues(beta, bCounter) { // Adds value into array
+    medianArray[bCounter - 1] = beta;
 }
 // This function is called by a button to set the height of phone from the
 // ground, in metres.
 function setCameraHeightValue() {
     var inputHeight
         // Step 3: Set camera height
-    inputHeight = Number(window.prompt("Please enter the height of the camera from the ground (meters):"));
-    
+    inputHeight = Number(window.prompt("Please enter the height of the camera from the ground (meters): "));
     // check if input is a number and is positive
     if (isNaN(inputHeight) == false && inputHeight > 0) {
         // display on screen using the displayMessage method
         userHeight = inputHeight
-        isRefreshed();
         headsUpDisplay();
-
     } else {
         cameraVideoPage.displayMessage("Input is invalid, please try again.", 2000);
     }
@@ -82,16 +72,14 @@ function setCameraHeightValue() {
 // the object being measured.  It uses the current smoothed tilt angle.
 function setBaseTiltAngle() {
     var tempBase
-    // Step 4: Record tilt angle 
-    // display on screen using the displayMessage method
+        // Step 4: Record tilt angle 
+        // display on screen using the displayMessage method
     tempBase = betaAngle.toFixed(0);
-	
-    if (tempBase >= 0 && tempBase <= 90){ //test to make sure input is valid
-		baseAngle = tempBase
-        //displayMessage of base angle --- AMITHA
-    }
-    else {} //displayMessage of invalid input --- AMITHA
-    isRefreshed();
+
+    if (tempBase >= 0 && tempBase <= 90) { //test to make sure input is valid
+        baseAngle = tempBase
+            //displayMessage of base angle --- AMITHA
+    } else {} //displayMessage of invalid input --- AMITHA
     headsUpDisplay();
 }
 
@@ -100,22 +88,18 @@ function setBaseTiltAngle() {
 // This function is called by a button to set the angle to the apex of
 // the object being measured.  It uses the current smoothed tilt angle.
 function setApexTiltAngle() {
-     var tempApex
-    // Step 4: Record tilt angle 
-    // display on screen using the displayMessage method
+    var tempApex
+        // Step 4: Record tilt angle 
+        // display on screen using the displayMessage method
     tempApex = betaAngle.toFixed(0);
-    if (tempApex >= 0 && tempApex <= 180){ //test to make sure input is valid
-         apexAngle = tempApex
-        //displayMessage of apex angle --- AMITHA
-    }
-    else {} //displayMessage of invalid input --- AMITHA
-    isRefreshed();
+    if (tempApex >= 0 && tempApex <= 180) { //test to make sure input is valid
+        apexAngle = tempApex
+            //displayMessage of apex angle --- AMITHA
+    } else {} //displayMessage of invalid input --- AMITHA
     headsUpDisplay();
+}
 
-
-// You may need to write several other functions.
-function heightCalc() {
-
+function heightCalc() { // Function to calculate building height
     var angleToTop, angleInRadians, calcHeight, totalHeight;
     // Complex calculations
     angleToTop = apexAngle - 90;
@@ -128,26 +112,46 @@ function heightCalc() {
 }
 
 function headsUpDisplay() { //refreshes HUD depending on what values have been inputted
-
+    var stringDisplay = {
+        angle: "Angle: " + betaAngle + "&deg;<br>",
+        userH: "Height of camera: " + userHeight + "m<br/>",
+        base: "Angle from ground to Base: " + baseAngle + "&deg;<br>",
+        apex: "Angle from ground to Apex: " + apexAngle + "&deg;<br>",
+        dispH: "Height of building: " + displayHeight + "m",
+    }
     if (isNaN(userHeight) == false) {
         if (isNaN(baseAngle) == false) {
+            //There is all values
             if (isNaN(apexAngle) == false) {
-                cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Height of camera: " + userHeight + "m<br/>Angle from ground to Base: " + baseAngle + " degrees<br/>Angle from ground to Apex: " + apexAngle + " degrees<br/>Height of building: " + displayHeight + "m");
-            } else {
-                cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Height of camera: " + userHeight + "m<br/>Angle from ground to Base: " + baseAngle + " degrees");
+                cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.userH + stringDisplay.base + stringDisplay.apex + stringDisplay.dispH);
+                // Calculate building height
+                heightCalc();
             }
-        } else if (isNaN(apexAngle) == false) {
-            cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Height of camera: " + userHeight + "m<br/>Angle from ground to Apex: " + apexAngle + " degrees");
-        } else {
-            cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Height of camera: " + userHeight + "m");
+            // There is base angle and user height
+            else {
+                cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.userH + stringDisplay.base);
+            }
+        }
+        // There is apex angle and user height 
+        else if (isNaN(apexAngle) == false) {
+            cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.userH + stringDisplay.apex);
+        }
+        // There is only user height
+        else {
+            cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.userH);
         }
     } else if (isNaN(baseAngle) == false) {
+        //There is base angle and apex angle
         if (isNaN(apexAngle) == false) {
-            cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Angle from ground to Base: " + baseAngle + " degrees<br/>Angle from ground to Apex: " + apexAngle + " degrees<br/>");
-        } else {
-            cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Angle from ground to Base: " + baseAngle + " degrees");
+            cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.base + stringDisplay.apex);
         }
-    } else if (isNaN(apexAngle) == false) {
-        cameraVideoPage.setHeadsUpDisplayHTML("Angle: " + betaAngle + " degrees<br/>Angle from ground to Apex: " + apexAngle + " degrees");
+        // There is only base angle
+        else {
+            cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.base);
+        }
+    }
+    // There is only apex angle
+    else if (isNaN(apexAngle) == false) {
+        cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.apex);
     }
 }
