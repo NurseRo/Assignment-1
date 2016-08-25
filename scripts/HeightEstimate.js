@@ -89,6 +89,15 @@ function setApexTiltAngle() {
     headsUpDisplay();
 }
 
+// This function calculates the baseLength using the base angle (in angles).
+function lengthCalc(input_height) {
+// The user_height is inputted by the user in the function setCameraHeightValue() in the form input_height. 
+user_height = input_height;
+    // Converts from degrees to radian
+bAngleInRadians = baseAngle * Math.PI / 180     
+baseLength = user_height * Math.tan(bAngleInRadians)
+}
+
 function heightCalc() { // Function to calculate building height
     var angleToTop, angleInRadians, calcHeight, totalHeight;
     // Complex calculations
