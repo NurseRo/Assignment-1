@@ -19,14 +19,15 @@ var cameraVideoPage = new CameraVideoPageController(
 
 var vGlobal = {// Global Object to store global variable to save namespace
     // Variables not displayed
-    baseLength: undefined,
-    bCounter: 0,
+    bCounter: 0, // Counts index for beta value to replace previous value in Array below.
     // Array of size N with every index filled with 0. ARRAY LENGTH MUST BE ODD.
     // N=3 was chosen as it allows most outliers to be discounted, and provides quick feedback to the user.
     medianArray: Array.apply(null, Array(3)).map(Number.prototype.valueOf, 0),
     // Variables that are displayed
     userHeight: undefined,
     displayHeight: undefined,
+    baseLength: undefined,
+    displayLength: undefined,
     apexAngle: undefined,
     baseAngle: undefined,
     betaAngle: undefined,
@@ -90,7 +91,7 @@ function setBaseTiltAngle() {
         cameraVideoPage.displayMessage("The Base Angle must be between 0 and 90 degrees. Try Again", 2500);
     } else {
         vGlobal.baseAngle = vGlobal.betaAngle;
-        cameraVideoPage.displayMessage("Base Angle: " + vGlobal.baseAngle + "&deg;", 2000);
+        cameraVideoPage.displayMessage("Base Angle: " + vGlobal.baseAngle + " degrees", 2000);
     }
 }
 
@@ -104,31 +105,34 @@ function setApexTiltAngle() {
         cameraVideoPage.displayMessage("The Apex Angle must greater than 0 degrees. Try Again", 2500);
     } else {
         vGlobal.apexAngle = vGlobal.betaAngle;
-        cameraVideoPage.displayMessage("Apex Angle: " + vGlobal.apexAngle + "&deg;", 2000);
+        cameraVideoPage.displayMessage("Apex Angle: " + vGlobal.apexAngle + " degrees", 2000);
     }
 }
 
-function heightCalc() { // Function to calculate building height
-    var angleToTop, angleInRadians, calcHeight, totalHeight;
-    // Calculate base length
-    angleInRadians = vGlobal.baseAngle * Math.PI / 180;
+function distanceCalc() { // Function to calculate distance to object
+    var angleInRadians;
+    angleInRadians = (vGlobal.baseAngle * Math.PI) / 180;  // Coverting Degrees to Radians
     vGlobal.baseLength = vGlobal.userHeight * Math.tan(angleInRadians);
-    // Calculate object height
-    angleToTop = vGlobal.apexAngle - 90;
-    // Coverting Degrees to Radians
-    angleInRadians = (angleToTop * Math.PI) / 180;
-    calcHeight = vGlobal.baseLength * Math.tan(angleInRadians);
-    totalHeight = calcHeight + vGlobal.userHeight;
-    vGlobal.displayHeight = totalHeight.toFixed(2); //only want to display to 2 decimal places
-
+    vGlobal.displayLength = vGlobal.baseLength.toFixed(2) // Display to 2 decimal places
 }
 
-function headsUpDisplay() { //refreshes HUD depending on what values have been inputted/changed
+function heightCalc() { // Function to calculate object height
+    var angleToTop, angleInRadians2, calcHeight, totalHeight;
+    angleToTop = vGlobal.apexAngle - 90; //True apex angle
+    angleInRadians2 = (angleToTop * Math.PI) / 180;  // Coverting Degrees to Radians
+    calcHeight = vGlobal.baseLength * Math.tan(angleInRadians);
+    totalHeight = calcHeight + vGlobal.userHeight;
+    vGlobal.displayHeight = totalHeight.toFixed(2); // Display to 2 decimal places
+    
+}
+
+function headsUpDisplay() { // Refreshes HUD depending on what values have been inputted/changed
     var stringDisplay = {
         angle: "Angle: " + vGlobal.betaAngle + "&deg;<br>",
-        userH: "Camera Height: " + vGlobal.userHeight + "m<br/>",
+        userH: "Camera Height: " + vGlobal.userHeight + "m<br>",
         base: "Base Angle: " + vGlobal.baseAngle + "&deg;<br>",
         apex: "Apex Angle: " + vGlobal.apexAngle + "&deg;<br>",
+        baseL: "Object Distance: " + vGlobal.displayLength + "m<br>",
         dispH: "Object Height: " + vGlobal.displayHeight + "m",
     }
     if (isNaN(vGlobal.userHeight) == false) {
@@ -136,13 +140,15 @@ function headsUpDisplay() { //refreshes HUD depending on what values have been i
             //There is all values
             if (isNaN(vGlobal.apexAngle) == false) {
                 // Calculate object height
+                distanceCalc();
                 heightCalc();
                 //Display String
-                cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.userH + stringDisplay.base + stringDisplay.apex + stringDisplay.dispH);
+                cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.userH + stringDisplay.base + stringDisplay.apex + stringDisplay.baseL + stringDisplay.dispH);
             }
             // There is base angle and user height
             else {
-                cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.userH + stringDisplay.base);
+                distanceCalc();
+                cameraVideoPage.setHeadsUpDisplayHTML(stringDisplay.angle + stringDisplay.userH + stringDisplay.base + stringDisplay.baseL);
             }
         }
         // There is apex angle and user height 
