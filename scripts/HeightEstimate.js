@@ -19,10 +19,10 @@ var cameraVideoPage = new CameraVideoPageController(
 
 // Global variables to be used
 var userHeight, displayHeight, apexAngle, baseAngle, baseLength, betaAngle, bCounter, medianArray;
+// Initialising variables
 bCounter = 0;
+// Array of size 9 with 0 in each index
 medianArray = Array.apply(null, Array(9)).map(Number.prototype.valueOf, 0);
-baseLength = 40;
-
 // This function will be called when the camera video page
 // is intialised and ready to be used.
 function cameraVideoPageInitialised() {
@@ -90,17 +90,14 @@ function setApexTiltAngle() {
 }
 
 // This function calculates the baseLength using the base angle (in angles).
-function lengthCalc(input_height) {
-// The user_height is inputted by the user in the function setCameraHeightValue() in the form input_height. 
-user_height = input_height;
-    // Converts from degrees to radian
-bAngleInRadians = baseAngle * Math.PI / 180     
-baseLength = user_height * Math.tan(bAngleInRadians)
+function lengthCalc() {
+// Converts from degrees to radian
+var bAngleInRadians = baseAngle * Math.PI / 180;   
+baseLength = userHeight * Math.tan(bAngleInRadians);
 }
 
 function heightCalc() { // Function to calculate building height
     var angleToTop, angleInRadians, calcHeight, totalHeight;
-    // Complex calculations
     angleToTop = apexAngle - 90;
     // Coverting Degrees to Radians
     angleInRadians = (angleToTop * Math.PI) / 180;
@@ -122,6 +119,8 @@ function headsUpDisplay() { //refreshes HUD depending on what values have been i
         if (isNaN(baseAngle) == false) {
             //There is all values
             if (isNaN(apexAngle) == false) {
+                // Calculate the length from the user
+                lengthCalc();
                 // Calculate building height
                 heightCalc();
                 //Display String
