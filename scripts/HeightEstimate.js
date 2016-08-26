@@ -21,8 +21,9 @@ var vGlobal = {// Global Object to store global variable to save namespace
     // Variables not displayed
     baseLength: undefined,
     bCounter: 0,
-    // Array of size _ with every index filled with 0. ARRAY LENGTH MUST BE ODD.
-    medianArray: Array.apply(null, Array(5)).map(Number.prototype.valueOf, 0),
+    // Array of size N with every index filled with 0. ARRAY LENGTH MUST BE ODD.
+    // N=3 was chosen as it allows most outliers to be discounted, and provides quick feedback to the user.
+    medianArray: Array.apply(null, Array(3)).map(Number.prototype.valueOf, 0),
     // Variables that are displayed
     userHeight: undefined,
     displayHeight: undefined,
@@ -72,8 +73,9 @@ function setCameraHeightValue() {
     if (isNaN(inputHeight) == false && inputHeight > 0) {
         // display on screen using the displayMessage method
         vGlobal.userHeight = inputHeight;
+        cameraVideoPage.displayMessage("Camera Height: " + vGlobal.userHeight + "m", 2000)
     } else {
-        cameraVideoPage.displayMessage("Input is invalid, please try again.", 2000);
+        cameraVideoPage.displayMessage("Height must be a number greater than 0. Try Again", 2500);
     }
 
 }
@@ -81,22 +83,28 @@ function setCameraHeightValue() {
 // This function is called by a button to set the angle to the base of
 // the object being measured.  It uses the current smoothed tilt angle.
 function setBaseTiltAngle() { 
-    // Makes sure base is less than apex angle
+    // Makes sure base is less than apex angle and 90, and greater than 0
     if (Number(vGlobal.betaAngle) > vGlobal.apexAngle) {
         cameraVideoPage.displayMessage("The Base Angle must be less than the Apex Angle. Try Again", 2500);
+    } else if ((Number(vGlobal.betaAngle) < 0) || (Number(vGlobal.betaAngle) > 90)) {
+        cameraVideoPage.displayMessage("The Base Angle must be between 0 and 90 degrees. Try Again", 2500);
     } else {
         vGlobal.baseAngle = vGlobal.betaAngle;
+        cameraVideoPage.displayMessage("Base Angle: " + vGlobal.baseAngle + "&deg;", 2000);
     }
 }
 
 // This function is called by a button to set the angle to the apex of
 // the object being measured.  It uses the current smoothed tilt angle.
 function setApexTiltAngle() {
-    // Makes sure apex is greater than base angle
+    // Makes sure apex is greater than base angle and 0
     if (Number(vGlobal.betaAngle) < vGlobal.baseAngle) {
         cameraVideoPage.displayMessage("The Apex Angle must be greater than the Base Angle. Try Again", 2500);
+    } else if ((Number(vGlobal.betaAngle) < 0)) {
+        cameraVideoPage.displayMessage("The Apex Angle must greater than 0 degrees. Try Again", 2500);
     } else {
         vGlobal.apexAngle = vGlobal.betaAngle;
+        cameraVideoPage.displayMessage("Apex Angle: " + vGlobal.apexAngle + "&deg;", 2000);
     }
 }
 
