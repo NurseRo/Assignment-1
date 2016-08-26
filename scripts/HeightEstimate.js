@@ -111,7 +111,7 @@ function setApexTiltAngle() {
 
 function distanceCalc() { // Function to calculate distance to object
     var angleInRadians;
-    angleInRadians = (vGlobal.baseAngle * Math.PI) / 180;  // Coverting Degrees to Radians
+    angleInRadians = (vGlobal.baseAngle * Math.PI / 180);  // Coverting Degrees to Radians
     vGlobal.baseLength = vGlobal.userHeight * Math.tan(angleInRadians);
     vGlobal.displayLength = vGlobal.baseLength.toFixed(2) // Display to 2 decimal places
 }
@@ -120,7 +120,7 @@ function heightCalc() { // Function to calculate object height
     var angleToTop, angleInRadians2, calcHeight, totalHeight;
     angleToTop = vGlobal.apexAngle - 90; //True apex angle
     angleInRadians2 = (angleToTop * Math.PI) / 180;  // Coverting Degrees to Radians
-    calcHeight = vGlobal.baseLength * Math.tan(angleInRadians);
+    calcHeight = vGlobal.baseLength * Math.tan(angleInRadians2);
     totalHeight = calcHeight + vGlobal.userHeight;
     vGlobal.displayHeight = totalHeight.toFixed(2); // Display to 2 decimal places
     
