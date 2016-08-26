@@ -17,15 +17,16 @@
 var cameraVideoPage = new CameraVideoPageController(
     cameraVideoPageInitialised);
 
-// Global variables
-// Internally accessed
-var baseLength, bCounter, medianArray;
+// Internally accessed global variables
+var internalVar = {
+    baseLength: 0,
+    bCounter: 0,
+    medianArray: Array.apply(null, Array(9)).map(Number.prototype.valueOf, 0),
+}
+
 // Display variables
-var userHeight, displayHeight, apexAngle, baseAngle, betaAngle; 
-// Initialise: 
-bCounter = 0;
-// Array of size 9 with 0 in each index
-medianArray = Array.apply(null, Array(9)).map(Number.prototype.valueOf, 0);
+var userHeight, displayHeight, apexAngle, baseAngle, betaAngle;
+
 // This function will be called when the camera video page
 // is intialised and ready to be used.
 function cameraVideoPageInitialised() {
@@ -37,22 +38,22 @@ function cameraVideoPageInitialised() {
 
 // Function to handle device beta angles
 function deviceMotion(event) {
-    var smooth = function (beta, bCounter) { // Adds value into array
-    medianArray[bCounter - 1] = beta;
+    var smooth = function(beta, bCounter) { // Adds value into array
+        internalVar.medianArray[bCounter - 1] = beta;
     }
     var beta = event.beta;
-    if (bCounter < medianArray.length) {
+    if (internalVar.bCounter < internalVar.medianArray.length) {
         //Index changer for global array (to fill the array)
-        bCounter += 1;
+        internalVar.bCounter += 1;
     } else {
         // Find median of full array
-        medianArray.sort();
-        betaAngle = medianArray[4].toFixed(0);
+        internalVar.medianArray.sort();
+        betaAngle = internalVar.medianArray[4].toFixed(0);
         headsUpDisplay();
-        bCounter = 0;
+        internalVar.bCounter = 0;
     }
     // Captures a single beta to add to the global array
-    smooth(beta, bCounter);
+    smooth(beta, internalVar.bCounter);
 }
 
 // This function is called by a button to set the height of phone from the
@@ -76,10 +77,11 @@ function setCameraHeightValue() {
 function setBaseTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
-    if (betaAngle > apexAngle){
+    // betaAngle needs to be evaluted as a number to ensure proper error checking
+    if (Number(betaAngle) > apexAngle) {
         cameraVideoPage.displayMessage("The Base Angle must be less than the Apex Angle. Try Again", 2500);
-    }
-    else{
+    } else {
+
         baseAngle = betaAngle;
     }
 }
@@ -90,19 +92,19 @@ function setApexTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
     // Makes sure apex is greater than base angle
-    if (betaAngle < baseAngle) {
+    // betaAngle needs to be evaluted as a number to ensure proper error checking
+    if (Number(betaAngle) < baseAngle) {
         cameraVideoPage.displayMessage("The Apex Angle must be greater than the Base Angle. Try Again", 2500);
-    }
-    else{
+    } else {
         apexAngle = betaAngle;
     }
 }
 
 // This function calculates the baseLength using the base angle (in angles).
 function lengthCalc() {
-// Converts from degrees to radian
-var bAngleInRadians = baseAngle * Math.PI / 180;   
-baseLength = userHeight * Math.tan(bAngleInRadians);
+    // Converts from degrees to radian
+    var bAngleInRadians = baseAngle * Math.PI / 180;
+    internalVar.baseLength = userHeight * Math.tan(bAngleInRadians);
 }
 
 function heightCalc() { // Function to calculate building height
@@ -110,7 +112,7 @@ function heightCalc() { // Function to calculate building height
     angleToTop = apexAngle - 90;
     // Coverting Degrees to Radians
     angleInRadians = (angleToTop * Math.PI) / 180;
-    calcHeight = baseLength * Math.tan(angleInRadians);
+    calcHeight = internalVar.baseLength * Math.tan(angleInRadians);
     totalHeight = calcHeight + userHeight;
     displayHeight = totalHeight.toFixed(2); //only want to display to 2 decimal places
 
