@@ -17,9 +17,12 @@
 var cameraVideoPage = new CameraVideoPageController(
     cameraVideoPageInitialised);
 
-// Global variables to be used
-var userHeight, displayHeight, apexAngle, baseAngle, baseLength, betaAngle, bCounter, medianArray;
-// Initialising variables
+// Global variables
+// Internally accessed
+var baseLength, bCounter, medianArray;
+// Display variables
+var userHeight, displayHeight, apexAngle, baseAngle, betaAngle; 
+// Initialise: 
 bCounter = 0;
 // Array of size 9 with 0 in each index
 medianArray = Array.apply(null, Array(9)).map(Number.prototype.valueOf, 0);
@@ -34,6 +37,9 @@ function cameraVideoPageInitialised() {
 
 // Function to handle device beta angles
 function deviceMotion(event) {
+    var smooth = function (beta, bCounter) { // Adds value into array
+    medianArray[bCounter - 1] = beta;
+    }
     var beta = event.beta;
     if (bCounter < medianArray.length) {
         //Index changer for global array (to fill the array)
@@ -46,12 +52,9 @@ function deviceMotion(event) {
         bCounter = 0;
     }
     // Captures a single beta to add to the global array
-    smoothValues(beta, bCounter);
+    smooth(beta, bCounter);
 }
 
-function smoothValues(beta, bCounter) { // Adds value into array
-    medianArray[bCounter - 1] = beta;
-}
 // This function is called by a button to set the height of phone from the
 // ground, in metres.
 function setCameraHeightValue() {
@@ -62,7 +65,6 @@ function setCameraHeightValue() {
     if (isNaN(inputHeight) == false && inputHeight > 0) {
         // display on screen using the displayMessage method
         userHeight = inputHeight;
-        headsUpDisplay();
     } else {
         cameraVideoPage.displayMessage("Input is invalid, please try again.", 2000);
     }
@@ -74,19 +76,26 @@ function setCameraHeightValue() {
 function setBaseTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
-    baseAngle = betaAngle;
-    headsUpDisplay();
+    if (betaAngle > apexAngle){
+        cameraVideoPage.displayMessage("The Base Angle must be less than the Apex Angle. Try Again", 2500);
+    }
+    else{
+        baseAngle = betaAngle;
+    }
 }
-
-
 
 // This function is called by a button to set the angle to the apex of
 // the object being measured.  It uses the current smoothed tilt angle.
 function setApexTiltAngle() {
     // Step 4: Record tilt angle 
     // display on screen using the displayMessage method
-    apexAngle = betaAngle;
-    headsUpDisplay();
+    // Makes sure apex is greater than base angle
+    if (betaAngle < baseAngle) {
+        cameraVideoPage.displayMessage("The Apex Angle must be greater than the Base Angle. Try Again", 2500);
+    }
+    else{
+        apexAngle = betaAngle;
+    }
 }
 
 // This function calculates the baseLength using the base angle (in angles).
@@ -107,7 +116,7 @@ function heightCalc() { // Function to calculate building height
 
 }
 
-function headsUpDisplay() { //refreshes HUD depending on what values have been inputted
+function headsUpDisplay() { //refreshes HUD depending on what values have been inputted/changed
     var stringDisplay = {
         angle: "Angle: " + betaAngle + "&deg;<br>",
         userH: "Camera Height: " + userHeight + "m<br/>",
